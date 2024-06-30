@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 
 class Suplement extends Model
 {
@@ -15,11 +16,17 @@ class Suplement extends Model
         'stock',
         'price',
         'description',
+        'image'
     ];
 
-    // public function users(): BelongsToMany
-    // { 
-    //     return $this->belongsToMany(User::class)->withPivot('date', 'amount', 'total');
-    // }
+    public function transactions()
+    {
+        return $this->belongsToMany(User::class, 'suplement_transactions');
+    }
 
+
+    public function image()
+    {
+        return Storage::url($this->image);
+    }
 }

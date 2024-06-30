@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Suplement;
+use App\Models\ProgramData;
+use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -13,7 +16,15 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('dashboard');
+        $suplements = Suplement::all();
+        $programs = ProgramData::all();
+
+        $insturctors = User::where('role', 'INSTRUCTOR')->get();
+        return view('dashboard')->with([
+            'suplements' => $suplements,
+            'programs' => $programs,
+            'insturctors' => $insturctors
+        ]);
     }
 
     /**

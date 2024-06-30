@@ -879,8 +879,13 @@ schedule
 
 
 
-.carousel-control-prev, .carousel-control-next {
-  width: 50px; /* Adjust this value as needed */
+.carousel-control-prev,
+.carousel-control-next {
+    position: absolute;
+    bottom: 10px; /* Mengatur jarak dari bawah */
+    transform: translateY(0%);
+    width: 20px; /* Sesuaikan kebutuhan */
+    height: 10px; /* Sesuaikan kebutuhan */
 }
 
 .carousel-control-prev {

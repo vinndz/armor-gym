@@ -4,35 +4,114 @@ namespace App\Http\Controllers;
 
 use App\Models\ProgramData;
 use Illuminate\Http\Request;
-use App\Services\SearchService;
+use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 
 class ProgramDataController extends Controller
 {
-    protected $searchService;
 
-    public function __construct (SearchService $searchService) 
-    {
-        $this->searchService = $searchService;
-    }
     public function index()
     {
         $datas = ProgramData::all();
+        $title = 'Delete Program Data!';
+        $text = "Are you sure you want to delete?";
+        confirmDelete($title, $text);
         return view('instructor.program_data.index', compact('datas'));
     }
 
+
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required',
             'description' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validasi gambar
         ]);
-            ProgramData::create([
-                'name' => $request->name,
-                'description' => $request->description,
-            ]);
-            return redirect()->back()->with('success', 'Successfully added suplement');
+
+        if ($request->hasFile("image")) {
+            $imagePath = $request->file("image")->store("img");
+            $data["image"] = $imagePath;
+        }
+
+
+        // Simpan data ke database
+        ProgramData::create($data);
+
+        Alert::success('Success', 'Successfully created data program');
+        return redirect()->back();
+
+        return redirect()->back();
     }
 
+    
+
+    public function data(Request $request)
+    {
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // Rows display per page
+
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $searchValue = $request->input('search.value'); // Search value
+
+        // Total records
+        $totalRecords = ProgramData::count();
+
+        // Query untuk pencarian dan pengurutan
+        $query = ProgramData::select('*');
+
+        // Penerapan pencarian jika ada nilai pencarian
+        if (!empty($searchValue)) {
+            $query->where(function($query) use ($searchValue) {
+                $query->where('name', 'like', '%' . $searchValue . '%')
+                    ->orWhere('description', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        // Total records setelah penerapan pencarian
+        $totalRecordswithFilter = $query->count();
+
+        // Get paginated records
+        $records = $query->orderBy($columnName_arr[$columnIndex_arr[0]['column']]['data'], $columnIndex_arr[0]['dir'])
+                        ->skip($start)
+                        ->take($rowperpage)
+                        ->get();
+
+        $data_arr = array();
+
+        foreach ($records as $index => $record) {
+            $no = $index + 1;
+            $name = ucwords($record->name); 
+            $description = ucwords($record->description); 
+
+            $data_arr[] = array(
+                "id" => $no,
+                "name" => $name,
+                "description" => $description,
+                "action" => '<div class="btn-group" role="group">
+                                <a href="'.route("program-data.update", ['id' => $record->id]).'" class="text-primary btn-update" data-target="#updateProgram'.$record->id.'">
+                                    <button type="button" class="btn btn-outline-success btn-xs" style="width:80px; margin-right:20px">Update</button>
+                                </a>
+                                <a href="'.route('program-data.destroy', $record->id).'" class="btn btn-outline-danger btn-xs rounded-2" style="width:80px; margin-right:20px; display:inline;" data-confirm-delete="true">Delete</a>   
+                                </div>',
+                            );
+                        }
+
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordswithFilter,
+            "aaData" => $data_arr
+        );
+
+        return response()->json($response);
+    }
 
     /**
      * Update the specified resource in storage.
@@ -41,54 +120,59 @@ class ProgramDataController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:50',
-            'description' => 'nullable|string|max:1000',
+            'description' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Nullable untuk update
         ]);
-    
+
         $data = ProgramData::findOrFail($id);
-    
-        $data->fill($validatedData);
-        $data->save();
-    
-        if ($data) {
-            return redirect()
-                ->back()
-                ->with(["success" => "Successfully updated supplement"]);
+        $imageData = $data->image;
+        
+
+        if ($request->hasFile("image")) {
+            if ($imageData) {
+                Storage::delete($imageData);
+            }
+            $imagePath = $request->file("image")->store("img");
         } else {
-            return redirect()
-                ->back()
-                ->with(["error" => "Failed to update supplement"]);
+            $imagePath = $imageData;
+        }
+
+        $validatedData["image"] = $imagePath;
+        $data->update($validatedData);
+
+        if ($data) {
+            Alert::success('Success', 'Successfully updated data program');
+            return redirect()->back();
+        } else {
+            Alert::error('Error', 'Failed updated data program');
+            return redirect()->back();
         }
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
+
     public function destroy(string $id)
     {
-        $data = ProgramData::where("id", $id);
+        // Periksa apakah ada hubungan yang terkait
+        $programData = ProgramData::findOrFail($id);
 
-        $data->delete();
+        // Cek apakah ada transaksi keanggotaan yang terkait dengan program
+        $relatedTransactions = $programData->programMembers()->exists();
 
-        if ($data) {
-            return redirect()
-                ->intended("program-data/index")
-                ->with(["success" => "Successfully updated supplement"]);
-        } else {
-            return redirect()
-                ->intended("program-data/index")
-                ->with(["error" => "Failed to update supplement"]);
+        // Jika ada transaksi terkait, tampilkan pesan dan kembalikan
+        if ($relatedTransactions) {
+            Alert::error('Error', 'Cannot delete program data. There are associated program member!');
+            return redirect()->back();
         }
-    }
 
-    public function search(Request $request)
-    {
-        $datas = $this->searchService->handle($request, new ProgramData, ['name','description'])->paginate(10)->withQueryString()->withPath('program-data-index');
+        $programData->delete();
 
-        return view('instructor.program_data.table', [
-            'datas' => $datas,
-        ]);
+        Alert::success('Success', 'Successfully deleted program data!');
+        return redirect()->back();
     }
 
 
-   
 }

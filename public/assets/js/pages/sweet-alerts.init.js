@@ -51,7 +51,7 @@ document.getElementById("sa-warning").addEventListener("click", function() {
         showCancelButton: true,
         confirmButtonColor: "#51d28c",
         cancelButtonColor: "#f34e4e",
-        confirmButtonText: "Yes, delete it!"
+        confirmButtonText: "Yes"
       }).then(function (result) {
         if (result.value) {
           Swal.fire("Deleted!", "Your file has been deleted.", "success"
@@ -67,7 +67,7 @@ document.getElementById("sa-params").addEventListener("click", function() {
         text: "You won't be able to revert this!",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
+        confirmButtonText: 'Yes',
         cancelButtonText: 'No, cancel!',
         customClass: {    
             confirmButton: 'btn btn-success mt-2',

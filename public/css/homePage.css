@@ -1,0 +1,89 @@
+body{
+    background:#eee;
+    margin-top:20px;
+}
+
+.panel {
+  border-radius: 0;
+  border: 0;
+  margin-bottom: 24px;
+
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Efek transisi untuk perubahan transformasi dan box-shadow */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0); /* Efek bayangan awal */
+}
+
+.panel:hover {
+    transform: scale(0.95); /* Memperkecil elemen saat dihover */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Efek bayangan saat dihover */
+}
+
+
+.panel-dark.panel-colorful {
+  background-color: #3b4146;
+  border-color: #3b4146;
+  color: #fff;
+}
+
+.panel-silver.panel-colorful {
+    background-color: #b4b4b4;
+    border-color: #ffffff;
+    color: #fff;
+  }
+
+  .panel-sage.panel-colorful {
+    background-color: #15bec3;
+    border-color: #ffffff;
+    color: #fff;
+  }
+
+.panel-danger.panel-colorful {
+  background-color: #f76c51;
+  border-color: #f76c51;
+  color: #fff;
+}
+
+.panel-primary.panel-colorful {
+  background-color: #5fa2dd;
+  border-color: #5fa2dd;
+  color: #fff;
+}
+
+.panel-info.panel-colorful {
+  background-color: #4ebcda;
+  border-color: #4ebcda;
+  color: #fff;
+}
+
+.panel-body {
+  padding: 25px 20px;
+}
+
+.panel hr {
+  border-color: rgba(0,0,0,0.1);
+}
+
+.mar-btm {
+  margin-bottom: 15px;
+}
+
+h2, .h2 {
+  font-size: 28px;
+}
+
+.small, small {
+  font-size: 85%;
+}
+
+.text-sm {
+  font-size: .9em;
+}
+
+.text-thin {
+  font-weight: 300;
+}
+
+.text-semibold {
+  font-weight: 600;
+}

@@ -2,63 +2,297 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ URL::asset('assets/libs/gridjs/theme/mermaid.min.css') }}">
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+@include('instructor.gym_schedule.style')
 @endsection
 
 @section('content')
-    <div class="content">
-        <h2>Program Data</h2>
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex justify-content-end">
-                    <div class="class">
-                        <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#addProgram"><i
-                                class="mdi mdi-plus me-1"></i> Program Data
-                        </button>
-                    </div>
-                </div>
-                <div class="my-2 w-50">
-                    <input type="text" id="search"  @if (session('keyword')) value="{{ session('keyword') }}" @endif class="form-control" placeholder="search...">
-                </div>
-                <div style="width : 100%; height : 700px; overflow : auto; ">
-                    @include('instructor.program_data.table')
-                </div>
-                </div>   
-            </div>
-        </div>
-    
-        {{-- add modal --}}
-        <div class="modal fade" id="addProgram" tabindex="-1" aria-labelledby="addProgramLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addProgramLabel">Add Program Data</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <form method="POST" action="{{ route('program-data.store') }}">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="name" class="form-label">{{ ucwords('name') }}</label>
-                                <input type="text" class="form-control" id="name" name="name" >
-                            </div>
-                            <div class="mb-3">
-                                <label for="description" class="form-label">{{ ucwords('description') }}</label>
-                                <input type="text" class="form-control" id="description" name="description" >
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
-
-                    </div>
+<div class="content">
+    <h2>Program Data</h2>
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-end">
+                <div class="class">
+                    <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal"
+                        data-bs-target="#addProgram"><i class="mdi mdi-plus me-1"></i> Program Data
+                    </button>
                 </div>
             </div>
+            <div style="width : 100%; height : 700px; overflow : auto; ">
+                <table class="table table-hover  table-responsive table-condensed animate__animated animate__fadeIn"
+                    id="table" width="100%">
+                    <thead class="table-dark ">
+                        <th style="color: black;">{{ ucwords('no') }}</th>
+                        <th style="color: black;">{{ ucwords('name') }}</th>
+                        <th style="color: black;">{{ ucwords('description') }}</th>
+                        <th style="color: black;">{{ ucwords('action') }}</th>
+                    </thead>
+                </table>
+            </div>
         </div>
-        {{-- end add modal --}}
-    
-@endsection
+    </div>
+</div>
 
-@section('scripts')
-    <script src="{{ asset('js/search.js') }}"></script>
-    <script>
-        search("search", "table", "{{ url('program-data/search?') }}")
-    </script>
+{{-- add modal --}}
+<div class="modal fade" id="addProgram" tabindex="-1" aria-labelledby="addProgramLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProgramLabel">Add Program Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form method="POST" id="add-form" action="{{ route('program-data.store') }}"
+                    enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="name" class="form-label">{{ ucwords('name') }}</label>
+                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
+                            name="name" required>
+                        @error('name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">{{ ucwords('description') }}</label>
+                        <input type="text" class="form-control @error('description') is-invalid @enderror"
+                            id="description" name="description" required>
+                        @error('description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">{{ ucwords('image') }}</label>
+                        <input type="file" class="form-control @error('image') is-invalid @enderror" id="image"
+                            name="image" accept="image/*" onchange="previewImageAdd(event)">
+                        @error('image')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <img id="image-preview-add" class="image-preview" src="#" alt="Image Preview"
+                            style="display: none; margin-top: 10px; max-width: 200px;">
+                    </div>
+                    <button type="button" class="btn btn-primary submit-btn" id="submit-btn">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- end add modal --}}
+
+{{-- update modal --}}
+@foreach ($datas as $data)
+<div class="modal fade" id="updateProgram{{ $data->id }}" tabindex="-1"
+    aria-labelledby="updateProgramLabel{{ $data->id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateProgramLabel{{ $data->id }}">Update Program</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form method="POST" action="{{ route('program-data.update', ['id' => $data->id]) }}"
+                    enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-3">
+                        <label for="name" class="form-label">{{ ucwords('name') }}</label>
+                        <input type="text" class="form-control @error('name') is-invalid @enderror"
+                            value="{{$data->name}}" id="name" name="name">
+                        @error('name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">{{ ucwords('description') }}</label>
+                        <input type="text" class="form-control @error('description') is-invalid @enderror"
+                            value="{{$data->description}}" id="description" name="description">
+                        @error('description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <input type="file" class="form-control  id=" image" name="image" accept="image/*"
+                            onchange="previewImageUpdate(event, '{{ $data->id }}')">
+                        <img id="image-preview-update-{{ $data->id }}" class="image-preview"
+                            src="{{ asset('storage/'.$data->image) }}" alt="Current Image"
+                            style="max-width: 200px; margin-top: 10px; @if(!$data->image) display:none; @endif">
+                    </div>
+                    <button type="button" class="btn btn-primary update-submit-btn"
+                        data-id="{{ $data->id }}">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endforeach
+{{-- end update modal --}}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+            var table = $('#table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('program-data.data') }}",
+                columns: [{
+                        data: 'id',
+                        orderable: false
+                    },
+                    {
+                        data: 'name',
+                        name: 'name',
+                        render: function(data) {
+                            return data.charAt(0).toUpperCase() + data.slice(1);
+                        }
+                    },
+                    {
+                        data: 'description',
+                        name: 'description',
+                        render: function(data) {
+                            return data.charAt(0).toUpperCase() + data.slice(1);
+                        }
+                    },
+                    {
+                        data: 'action',
+                        orderable: false
+                    },
+                ],
+                columnDefs: [{
+                    className: "text-center",
+                    targets: "_all"
+                }, ],
+                language: {
+                    search: "", // Placeholder untuk kotak pencarian
+                    paginate: {
+                        first: '<i class="fa fa-angle-double-left"></i>',
+                        last: '<i class="fa fa-angle-double-right"></i>',
+                        next: '<i class="fa fa-angle-right"></i>',
+                        previous: '<i class="fa fa-angle-left"></i>'
+                    }
+                }
+            });
+
+            $('#table').on('click', '.btn-update', function(e) {
+                e.preventDefault(); // Prevent default link behavior
+                var url = $(this).attr('href');
+                var modalId = $(this).data('target'); // Ambil ID modal dari data-target
+                $(modalId).modal('show'); // Tampilkan modal yang sesuai dengan ID
+            });
+
+            // Menambahkan placeholder ke dalam kotak pencarian
+            $('div.dataTables_wrapper input[type="search"]').attr('placeholder', 'Search...');
+
+            // AJAX form submission
+            $('#submit-btn').click(function() {
+                var form = $('#add-form');
+                var formData = new FormData(form[0]);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method'),
+                    data: formData,
+                    success: function(response) {
+                        // Jika berhasil, reload DataTable dan tutup modal
+                        table.ajax.reload();
+                        $('#addProgram').modal('hide');
+                        // Tampilkan pesan sukses jika perlu
+                        Swal.fire("Success", "Successfully created membership data!", "success");
+                    },
+                    error: function(xhr) {
+                        // Tampilkan pesan kesalahan di modal
+                        var errors = xhr.responseJSON.errors;
+                        $('.invalid-feedback').remove(); // Hapus pesan kesalahan sebelumnya
+                        $('.is-invalid').removeClass('is-invalid'); // Hapus class is-invalid sebelumnya
+
+                        $.each(errors, function(field, messages) {
+                            var input = $('[name="' + field + '"]');
+                            input.addClass('is-invalid');
+                            $.each(messages, function(index, message) {
+                                input.after('<div class="invalid-feedback">' + message + '</div>');
+                            });
+                        });
+                    }
+                });
+            });
+
+
+
+
+            // Event handler untuk tombol update
+            $('.update-submit-btn').click(function() {
+                var id = $(this).data('id');
+                var form = $('#updateProgram' + id).find('form')[0]; // Get the form element
+
+                // Create FormData object
+                var formData = new FormData(form);
+
+                $.ajax({
+                    url: $(form).attr('action'),
+                    method: $(form).attr('method'),
+                    data: formData,
+                    processData: false, // Prevent jQuery from converting the data
+                    contentType: false, // Prevent jQuery from setting the content type
+                    success: function(response) {
+                        // If successful, reload DataTable and close modal
+                        table.ajax.reload();
+                        $('#updateProgram' + id).modal('hide');
+                        // Show success message if needed
+                        Swal.fire("Success", "Successfully updated program data!", "success");
+                    },
+                    error: function(xhr) {
+                        // Display error messages in the modal
+                        var errors = xhr.responseJSON.errors;
+                        $('#updateProgram' + id).find('.invalid-feedback').remove(); // Remove previous error messages
+                        $('#updateProgram' + id).find('.is-invalid').removeClass('is-invalid'); // Remove previous invalid classes
+
+                        $.each(errors, function(field, messages) {
+                            var input = $('#updateProgram' + id).find('[name="' + field + '"]');
+                            input.addClass('is-invalid');
+                            $.each(messages, function(index, message) {
+                                input.after('<div class="invalid-feedback">' + message + '</div>');
+                            });
+                        });
+                    }
+                });
+            });
+
+
+        });
+
+    function previewImageAdd(event) {
+        var input = event.target;
+        var reader = new FileReader();
+        reader.onload = function() {
+            var imgElement = document.getElementById('image-preview-add');
+            imgElement.src = reader.result;
+            imgElement.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function previewImageUpdate(event, itemId) {
+        var input = event.target;
+        var reader = new FileReader();
+        reader.onload = function() {
+            var imgElement = document.getElementById('image-preview-update-' + itemId);
+            imgElement.src = reader.result;
+            imgElement.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+
+
+        document.getElementById('submit-btn').addEventListener('click', function() {
+            // Ambil elemen formulir
+            var form = document.getElementById('add-form');
+            // Validasi formulir sebelum mengirimkan
+            if (form.checkValidity()) {
+                // Submit formulir jika valid
+                form.submit();
+            } else {
+                // Jika formulir tidak valid, fokuskan pada elemen yang tidak valid
+                form.reportValidity();
+            }
+        });
+</script>
 @endsection

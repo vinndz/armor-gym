@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -24,7 +25,8 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
-        'role'
+        'role',
+        'image'
     ];
  
     protected $hidden = [
@@ -48,4 +50,12 @@ class User extends Authenticatable
                     ->withPivot('date', 'amount', 'total')
                     ->withTimestamps();
     }
+
+    public function image()
+    {
+        return Storage::url($this->image);
+    }
+    
+    
+    
 }

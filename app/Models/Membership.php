@@ -15,5 +15,10 @@ class Membership extends Model
         'description',
     ];
 
+    public function membershipTransactions()
+    {
+        return $this->hasMany(MembershipTransaction::class, 'membership_id');
+    }
+
     
 }

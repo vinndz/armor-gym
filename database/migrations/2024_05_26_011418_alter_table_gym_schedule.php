@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('gym_schedules', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->foreignId('membership_transaction_id')->constrained('membership_transactions')->cascadeOnDelete();
-            $table->date('date');
-            $table->timestamps();
+        Schema::table('gym_schedules', function (Blueprint $table) {
+            $table->dateTime('date')->change();
+            $table->string('status')->after('date');
         });
     }
 
@@ -24,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('gym_schedules');
+        Schema::table('gym_schedules', function (Blueprint $table) {
+            $table->date('date')->change();
+            $table->dropColumn('status');
+        });
     }
 };

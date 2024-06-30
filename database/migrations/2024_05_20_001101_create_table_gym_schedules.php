@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('progress_members', function (Blueprint $table) {
+        Schema::create('gym_schedules', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignId('program_member_id')->constrained('program_members')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('membership_transaction_id')->constrained('membership_transactions')->cascadeOnDelete();
             $table->date('date');
-            $table->string('details');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('progress_members');
+        Schema::dropIfExists('gym_schedules');
     }
 };

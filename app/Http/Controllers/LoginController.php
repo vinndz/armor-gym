@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use RealRashid\SweetAlert\Facades\Alert;
+
 
 
 
@@ -99,23 +101,29 @@ class LoginController extends Controller
         if(Auth::attempt($checkLogin)){
          //   dd(Auth::user()->role);
             if(Auth::user()->role == 'ADMIN'){
+                Alert::success('Success', 'Successfully Login Admin');
                 return redirect()->route('admin.home');
-            
             } elseif(Auth::user()->role == 'MEMBER'){
+                Alert::success('Success', 'Successfully Login Member');
                 return redirect()->route('member.home');
 
             } elseif(Auth::user()->role == 'INSTRUCTOR'){
+                Alert::success('Success', 'Successfully Login Instuctor');
                 return redirect()->route('instructor.home');
 
             } elseif(Auth::user()->role == 'OWNER'){
+                Alert::success('Success', 'Successfully Login Owner');
                 return redirect()->route('owner.home');
 
             } elseif(Auth::user()->role === 'GUEST'){
+                Alert::success('Success', 'Successfully Login Guest');
                 return redirect()->route('guest.home');
             }
         } else{
-            return redirect('login')->withErrors('Username and password do not match')->withInput();
+            notify()->error('Username and password do not match!');
+            return redirect('login');
         }
+        
     }
 
 
@@ -123,6 +131,7 @@ class LoginController extends Controller
     {
         Auth::guard('web')->logout();
         $request->session()->invalidate();
+        notify()->success('Successfully Logout!');
         return redirect('login');
     }
  

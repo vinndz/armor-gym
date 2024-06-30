@@ -4,20 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Services\SearchService;
+use RealRashid\SweetAlert\Facades\Alert;
+
 
 class InstructorDataController extends Controller
 {
-    protected $searchService;
-
-    public function __construct (SearchService $searchService) 
-    {
-        $this->searchService = $searchService;
-    }
     public function index()
     {
         $users = User::where('role', 'GUEST')->cursor();
         $instructor = User::where('role', 'INSTRUCTOR')->cursor();
+
+        $title = 'Inactive Instructor!';
+        $text = "Are you sure you want to inactive this user?";
+        confirmDelete($title, $text);
         return view('admin/instructor_data/index', compact('users', 'instructor'));
     }
 
@@ -31,9 +30,11 @@ class InstructorDataController extends Controller
 
         if($user) {
             $user->update(['role' => 'INSTRUCTOR']);
-            return redirect()->back()->with('success', 'Data Instructor berhasil ditambahkan.');
+            Alert::success('Success', 'Successfully created instructor');
+            return redirect()->back();
         } else {
-            return redirect()->back()->with('error', 'Nama yang dipilih tidak ditemukan.');
+            Alert::success('Success', 'Failed created supplement');
+            return redirect()->back();
         }
     }
     public function destroy($id)
@@ -43,26 +44,83 @@ class InstructorDataController extends Controller
         $instructor->update(['role' => 'GUEST']);
 
         if ($instructor) {
-            return redirect()
-                ->intended("/instructor-data/index")
-                ->with(["sucesss" => "Successfully Deleted Instructor"]);
+            Alert::success('Success', 'Successfully inactive instructor');
+            return redirect()->back();
         } else {
-            return redirect()
-                ->intended("/instructor-data/index")
-                ->with(["sucesss" => "Failed Deleted Instructor"]);
+            Alert::success('error', 'Failed inactive instructor');
+            return redirect()->back();
         }
     }
 
-    public function search(Request $request)
-    {
-        $instructor = $this->searchService->handle($request, new User(), ['name','date_of_birth', 'gender','email'])
-            ->where('role', 'instructor')
-            ->paginate(10)
-            ->withQueryString()
-            ->withPath('instructor-data-index');
 
-        return view('admin.instructor_data.table', [
-            'instructor' => $instructor,
-        ]);
+    public function data(Request $request)
+    {
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // Rows display per page
+
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $searchValue = $request->input('search.value'); // Search value
+
+        // Total records
+        $totalRecords = User::where('role', 'instructor')->count();
+
+
+        // Query untuk pencarian dan pengurutan
+        $query = User::select('*');
+
+        $query->where('role', 'instructor');
+
+        // Penerapan pencarian jika ada nilai pencarian
+        if (!empty($searchValue)) {
+            $query->where(function($query) use ($searchValue) {
+                $query->where('name', 'like', '%' . $searchValue . '%')
+                    ->orWhereRaw("DATE_FORMAT(date_of_birth, '%d-%m-%Y') LIKE ?", ["%" . $searchValue."%"])
+                    ->orWhere('gender', 'like', '%' . $searchValue . '%')
+                    ->orWhere('email', 'like', '%' . $searchValue . '%');
+            });
+        }
+
+        // Total records setelah penerapan pencarian
+        $totalRecordswithFilter = $query->count();
+
+        // Get paginated records
+        $records = $query->orderBy($columnName_arr[$columnIndex_arr[0]['column']]['data'], $columnIndex_arr[0]['dir'])
+                        ->skip($start)
+                        ->take($rowperpage)
+                        ->get();
+
+        $data_arr = array();
+
+        foreach ($records as $index => $record) {
+            $no = $index + 1;
+            $name = ucwords($record->name); 
+            $date_of_birth = $record->date_of_birth; 
+            $gender = ucwords($record->gender); 
+            $email = $record->email; 
+
+            $data_arr[] = array(
+                "id" => $no,
+                "name" => $name,
+                "date_of_birth" => $date_of_birth,
+                "gender" => $gender,
+                "email" => $email,
+                "action" => '<div class="btn-group" role="group">                                                  
+                                <a href="'.route('instructor-data.destroy', $record->id).'" class="btn btn-outline-danger btn-xs" style="width:80px; margin-right:20px" data-confirm-delete="true">Inactive</a>
+                            </div>',
+            );
+        }
+
+        $response = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalRecordswithFilter,
+            "aaData" => $data_arr
+        );
+
+        return response()->json($response);
     }
+
 }
