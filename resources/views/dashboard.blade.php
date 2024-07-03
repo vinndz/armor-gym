@@ -167,7 +167,7 @@
         <video autoplay muted loop id="bg-video">
             <source src="{{ asset('images/gym-video.mp4') }}" type="video/mp4" />
         </video>
-        
+
 
         <div class="video-overlay header-text">
             <div class="caption">
@@ -338,7 +338,7 @@
                     @foreach($insturctors as $instructor)
                     <div class="swiper-slide">
                         {{-- <img src="{{ asset('images/instructors/' . $instructor->image) }}" height="300px"> --}}
-                        <img src="{{ $instructor->image != null ? asset('images/instructors/' . $instructor->image) : asset('images/profile-default.png') }}"
+                        <img src="{{ $instructor->image != null ? asset('storage/' . $instructor->image) : asset('images/profile-default.png') }}"
                             height="300px">
                         <div class="instructor-name">{{ ucwords($instructor->name) }}</div>
                     </div>

@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('css')
-    <link rel="stylesheet" href="{{ URL::asset('assets/css/profile.css') }}">
+<link rel="stylesheet" href="{{ URL::asset('assets/css/profile.css') }}">
 @endsection
 
 
@@ -12,9 +12,12 @@
         <div class="card mb-4 mb-xl-0">
             <div class="card-header">Profile Picture</div>
             <div class="card-body text-center">
-                <img  class="img-account-profile mb-2 rounded-circle" src="{{ $user->image != null ? asset('images/admin/' . $user->image) : asset('images/profile-default.png') }}" width="150" alt="User-Profile-Image">
+                <img class="img-account-profile mb-2 rounded-circle"
+                    src="{{ $user->image != null ? asset('storage/' . $user->image) : asset('images/profile-default.png') }}"
+                    width="150" alt="User-Profile-Image">
                 <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 2 MB</div>
-                <button class="btn btn-primary" type="button"  data-bs-toggle="modal" data-bs-target="#updateUser{{$user->id}}">Upload new image</button>
+                <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                    data-bs-target="#updateUser{{$user->id}}">Upload new image</button>
             </div>
         </div>
     </div>
@@ -23,58 +26,65 @@
         <div class="card mb-4">
             <div class="card-header">Account Details</div>
             <div class="card-body">
-                <form method="POST" id ="user-update" action="{{ route('admin.update-profile', ['id' => $user->id]) }}">
+                <form method="POST" id="user-update" action="{{ route('admin.update-profile', ['id' => $user->id]) }}">
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
                         <label class="small mb-1" for="name">name</label>
-                        <input class="form-control @error('name') is-invalid @enderror"  name="name" id="name" type="text" placeholder="Enter your name" value="{{ ucwords($user->name) }}">
+                        <input class="form-control @error('name') is-invalid @enderror" name="name" id="name"
+                            type="text" placeholder="Enter your name" value="{{ ucwords($user->name) }}">
                         @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="row gx-3 mb-3">
                         <div class="col-md-6">
                             <label class="small mb-1" for="gender">Gender</label>
-                            <select name="gender" id="gender" class="form-control @error('gender') is-invalid @enderror" >
+                            <select name="gender" id="gender"
+                                class="form-control @error('gender') is-invalid @enderror">
                                 <option value="" disabled>Select Gender</option>
                                 <option value="male" {{ $user->gender == 'male' ? 'selected' : '' }}>Male</option>
                                 <option value="female" {{ $user->gender == 'female' ? 'selected' : '' }}>Female</option>
                                 <option value="other" {{ $user->gender == 'other' ? 'selected' : '' }}>Other</option>
-                            </select> 
+                            </select>
                             @error('gender')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        
+
                         <div class="col-md-6">
                             <label class="small mb-1" for="date_of_birth">Birthday</label>
-                            <input class="form-control @error('date_of_birth') is-invalid @enderror"  id="date_of_birth" type="date" name="date_of_birth" placeholder="Enter your birthday" value="{{ $user->date_of_birth }}">
+                            <input class="form-control @error('date_of_birth') is-invalid @enderror" id="date_of_birth"
+                                type="date" name="date_of_birth" placeholder="Enter your birthday"
+                                value="{{ $user->date_of_birth }}">
                             @error('date_of_birth')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                        </div>                 
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="small mb-1" for="username">Username</label>
-                        <input class="form-control @error('username') is-invalid @enderror"  id="username" type="text" name="username" placeholder="Enter your username" value="{{ ucwords($user->username) }}">
+                        <input class="form-control @error('username') is-invalid @enderror" id="username" type="text"
+                            name="username" placeholder="Enter your username" value="{{ ucwords($user->username) }}">
                         @error('username')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mb-3">
                         <label class="small mb-1" for="email">Email address</label>
-                        <input class="form-control @error('email') is-invalid @enderror"  id="email" type="email" name="email" placeholder="Enter your email address" value="{{ ucwords($user->email) }}">
+                        <input class="form-control @error('email') is-invalid @enderror" id="email" type="email"
+                            name="email" placeholder="Enter your email address" value="{{ ucwords($user->email) }}">
                         @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="small mb-1" for="password">Password*</label>
-                        <input class="form-control" id="password" type="password" name="password" placeholder="••••••••">
+                        <input class="form-control" id="password" type="password" name="password"
+                            placeholder="••••••••">
                         @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <button class="btn btn-primary" id="submit-btn" type="button">Save changes</button>
@@ -85,7 +95,8 @@
 </div>
 </div>
 
-<div class="modal fade" id="updateUser{{$user->id}}" tabindex="-1" aria-labelledby="updateUserLabel{{$user->id}}" aria-hidden="true">
+<div class="modal fade" id="updateUser{{$user->id}}" tabindex="-1" aria-labelledby="updateUserLabel{{$user->id}}"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -93,16 +104,21 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <form method="POST" id ="user-form" action="{{ route('admin.upload-profile-picture', ['id' => $user->id]) }}" enctype="multipart/form-data">
+                <form method="POST" id="user-form"
+                    action="{{ route('admin.upload-profile-picture', ['id' => $user->id]) }}"
+                    enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
                         <label for="image" class="form-label">{{ ucwords('image') }}</label>
-                        <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+                        <input type="file" class="form-control @error('image') is-invalid @enderror" id="image"
+                            name="image" accept="image/*" onchange="previewImage(event)">
                         @error('image')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <img id="image-preview-update-{{ $user->id }}" class="image-preview" src="{{ asset('storage/'.$user->image) }}" alt="Current Image" style="max-width: 200px; margin-top: 10px; @if(!$user->image) display:none; @endif">
+                        <img id="image-preview-update-{{ $user->id }}" class="image-preview"
+                            src="{{ asset('storage/'.$user->image) }}" alt="Current Image"
+                            style="max-width: 200px; margin-top: 10px; @if(!$user->image) display:none; @endif">
                     </div>
                     <button class="btn btn-primary" type="button" id="submit-image">Save changes</button>
                 </form>
@@ -114,8 +130,8 @@
 
 @endsection
 @section('scripts')
-    <script>
-        $('#submit-image').click(function() {
+<script>
+    $('#submit-image').click(function() {
             var id = $(this).attr('id');
             var form = $('#updateUser' + id).find('form');
             
@@ -223,5 +239,5 @@
                 form.reportValidity();
             }
     });
-    </script>
+</script>
 @endsection
