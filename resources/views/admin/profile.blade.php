@@ -13,7 +13,7 @@
             <div class="card-header">Profile Picture</div>
             <div class="card-body text-center">
                 <img class="img-account-profile mb-2 rounded-circle"
-                    src="{{ $user->image != null ? asset('storage/' . $user->image) : asset('images/profile-default.png') }}"
+                    src="{{ $user->image != '-' ? asset('storage/' . $user->image) : asset('images/profile-default.png') }}"
                     width="150" alt="User-Profile-Image">
                 <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 2 MB</div>
                 <button class="btn btn-primary" type="button" data-bs-toggle="modal"
