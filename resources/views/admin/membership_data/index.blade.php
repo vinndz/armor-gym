@@ -1,153 +1,156 @@
 @extends('layouts.master')
 
 @section('css')
-    <link rel="stylesheet" href="{{ URL::asset('assets/libs/gridjs/theme/mermaid.min.css') }}">
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-    @include('instructor.gym_schedule.style')
+<link rel="stylesheet" href="{{ URL::asset('assets/libs/gridjs/theme/mermaid.min.css') }}">
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+@include('instructor.gym_schedule.style')
 @endsection
 
 @section('content')
-    <div class="content ">
-        <h2>Data Membership</h2>
-        <div class="card">
-            <div class="card-body ">
-                <div class="d-flex justify-content-end">
-                    <div class="class">
-                        <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal"
-                            data-bs-target="#addMembership"><i class="mdi mdi-plus me-1"></i> Data Membership
-                        </button>
+<div class="content ">
+    <h2>Data Membership</h2>
+    <div class="card">
+        <div class="card-body ">
+            <div class="d-flex justify-content-end">
+                <div class="class">
+                    <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal"
+                        data-bs-target="#addMembership"><i class="mdi mdi-plus me-1"></i> Data Membership
+                    </button>
+                </div>
+            </div>
+            <div style="width : 100%; height : 700px; overflow : auto; ">
+                <table class="table table-hover  table-responsive table-condensed animate__animated animate__fadeIn"
+                    id="table" width="100%">
+                    <thead class="table-dark ">
+                        <th style="color: black;">{{ ucwords('no') }}</th>
+                        <th style="color: black;">{{ ucwords('membership type') }}</th>
+                        <th style="color: black;">{{ ucwords('price') }}</th>
+                        <th style="color: black;">{{ ucwords('description') }}</th>
+                        <th style="color: black;">{{ ucwords('action') }}</th>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- update modal --}}
+@foreach ($memberships as $item)
+<div class="modal fade" id="updateMembership{{ $item->id }}" tabindex="-1"
+    aria-labelledby="updateMembershipLabel{{ $item->id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateMembershipLabel{{ $item->id }}">Update Membership</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form method="POST" action="{{ route('membership-data.update', ['id' => $item->id]) }}">
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-3">
+                        <label for="type" class="form-label">{{ ucwords('type') }}</label>
+                        <input type="text" class="form-control  @error('price') is-invalid @enderror"
+                            value="{{ $item->type }}" id="type" name="type">
+                        @error('type')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
-                </div>
-                <div style="width : 100%; height : 700px; overflow : auto; ">
-                    <table class="table table-hover  table-responsive table-condensed animate__animated animate__fadeIn"
-                        id="table" width="100%">
-                        <thead class="table-dark ">
-                            <th style="color: black;">{{ ucwords('no') }}</th>
-                            <th style="color: black;">{{ ucwords('membership type') }}</th>
-                            <th style="color: black;">{{ ucwords('price') }}</th>
-                            <th style="color: black;">{{ ucwords('description') }}</th>
-                            <th style="color: black;">{{ ucwords('action') }}</th>
-                        </thead>
-                    </table>
-                </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">{{ ucwords('price') }}</label>
+                        <input type="text" class="form-control @error('price') is-invalid @enderror"
+                            value="{{ $item->price }}" id="price" name="price">
+                        @error('price')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">{{ ucwords('description') }}</label>
+                        <input type="text" class="form-control @error('description') is-invalid @enderror"
+                            value="{{ $item->description }}" id="description" name="description">
+                        @error('description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="button" class="btn btn-primary update-submit-btn"
+                        data-id="{{ $item->id }}">Submit</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
+@endforeach
+{{-- end update modal --}}
 
-    {{-- update modal --}}
-    @foreach ($memberships as $item)
-        <div class="modal fade" id="updateMembership{{ $item->id }}" tabindex="-1"
-          aria-labelledby="updateMembershipLabel{{ $item->id }}" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
-              <div class="modal-content">
-                  <div class="modal-header">
-                      <h5 class="modal-title" id="updateMembershipLabel{{ $item->id }}">Update Suplement</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body p-4">
-                      <form method="POST" action="{{ route('membership-data.update', ['id' => $item->id]) }}">
-                          @csrf
-                          @method('PUT')
-                          <div class="mb-3">
-                              <label for="type" class="form-label">{{ ucwords('type') }}</label>
-                              <input type="text" class="form-control  @error('price') is-invalid @enderror"  value="{{ $item->type }}" id="type"
-                                  name="type">
-                                @error('type')
-                                  <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                          </div>
-                          <div class="mb-3">
-                              <label for="price" class="form-label">{{ ucwords('price') }}</label>
-                              <input type="text" class="form-control @error('price') is-invalid @enderror" value="{{ $item->price }}" id="price"
-                                  name="price">
-                                @error('price')
-                                  <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                          </div>
-                          <div class="mb-3">
-                              <label for="description" class="form-label">{{ ucwords('description') }}</label>
-                              <input type="text" class="form-control @error('description') is-invalid @enderror" value="{{ $item->description }}"
-                                  id="description" name="description">
-                                @error('description')
-                                  <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                          </div>
-                          <button type="button" class="btn btn-primary update-submit-btn" data-id="{{ $item->id }}">Submit</button>
-                      </form>
-                  </div>
-              </div>
-          </div>
-        </div>
-    @endforeach
-    {{-- end update modal --}}
+{{-- add modal --}}
+<div class="modal fade" id="addMembership" tabindex="-1" aria-labelledby="addMembershipLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMembershipLabel">Add Memberships</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form method="POST" id="add-form" action="{{ route('membership-data.store') }}">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="type" class="form-label">{{ ucwords('type') }}</label>
+                        <input type="text" class="form-control  @error('type') is-invalid @enderror" id="type"
+                            name="type">
+                        @error('type')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">{{ ucwords('price') }}</label>
+                        <input type="number" class="form-control  @error('price') is-invalid @enderror" id="price"
+                            name="price">
+                        @error('price')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">{{ ucwords('description') }}</label>
+                        <input type="text" class="form-control  @error('description') is-invalid @enderror"
+                            id="description" name="description">
+                        @error('description')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="button" class="btn btn-primary" id="submit-btn">Submit</button>
+                </form>
 
-    {{-- add modal --}}
-    <div class="modal fade" id="addMembership" tabindex="-1" aria-labelledby="addMembershipLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addMembershipLabel">Add Memberships</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <form method="POST" id="add-form" action="{{ route('membership-data.store') }}">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="type" class="form-label">{{ ucwords('type') }}</label>
-                            <input type="text" class="form-control  @error('type') is-invalid @enderror" id="type" name="type">
-                            @error('type')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="price" class="form-label">{{ ucwords('price') }}</label>
-                            <input type="number" class="form-control  @error('price') is-invalid @enderror" id="price" name="price">
-                            @error('price')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">{{ ucwords('description') }}</label>
-                            <input type="text" class="form-control  @error('description') is-invalid @enderror" id="description" name="description">
-                            @error('description')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <button type="button" class="btn btn-primary" id="submit-btn">Submit</button>
-                    </form>
-
-                </div>
             </div>
         </div>
     </div>
-    {{-- end add modal --}}
+</div>
+{{-- end add modal --}}
 
-    {{-- Modal confirm --}}
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
-                    <button type="button" class="btn-close" onclick="openAddModal()"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to create supplement data?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+{{-- Modal confirm --}}
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close" onclick="openAddModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to create supplement data?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 
-                    <button type="submit" class="btn btn-primary" onclick="submitForm()">Confirm Submit</button>
-                </div>
+                <button type="submit" class="btn btn-primary" onclick="submitForm()">Confirm Submit</button>
             </div>
         </div>
     </div>
-    {{-- End modal confirm --}}
+</div>
+{{-- End modal confirm --}}
 
-    <script type="text/javascript">
-        $(document).ready(function() {
+<script type="text/javascript">
+    $(document).ready(function() {
             // Pengaturan DataTables
             var table = $('#table').DataTable({
                 processing: true,
@@ -257,9 +260,8 @@
             $('#confirmationModal').modal('hide'); 
             $('#addMembership').modal('show'); 
         }
-    </script>
-    
+</script>
+
 
 
 @endsection
-
