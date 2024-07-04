@@ -23,7 +23,7 @@
                     aria-expanded="false">
                     @if(auth()->user()->role == 'ADMIN')
                     <img class="rounded-circle header-profile-user"
-                        src="{{ auth()->user()->image != - ? asset('storage/' . auth()->user()->image) : asset('images/profile-default.png') }}"
+                        src="{{ auth()->user()->image != '-' ? asset('storage/' . auth()->user()->image) : asset('images/profile-default.png') }}"
                         alt="Header Avatar">
                     @elseif(auth()->user()->role == 'INSTRUCTOR')
                     <img class="rounded-circle header-profile-user"
