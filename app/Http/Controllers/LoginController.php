@@ -113,7 +113,7 @@ class LoginController extends Controller
 
             } elseif(Auth::user()->role == 'OWNER'){
                 Alert::success('Success', 'Successfully Login Owner');
-                return redirect()->route('owner.home');
+                return redirect()->route('report.index-monthly');
 
             } elseif(Auth::user()->role === 'GUEST'){
                 Alert::success('Success', 'Successfully Login Guest');
