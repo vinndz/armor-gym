@@ -75,6 +75,12 @@ class GymScheduleController extends Controller
             'date'  => 'required',
         ]);
 
+        $schedule = GymSchedule::where('id', $id)->where('status', 'present')->first();
+        if ($schedule) {
+            Alert::error('Error', 'Cannot update member!');
+            return redirect()->back();
+        }
+
         $schedule = GymSchedule::findOrFail($id);
 
         if(!$schedule){
@@ -217,6 +223,8 @@ class GymScheduleController extends Controller
            Alert::error('Error', 'Member already present!');
            return redirect()->back();
        }
+
+       
 
        $schedule->update(['status' => 'present']);
        Alert::success('Success', 'Successfully update status member!');
