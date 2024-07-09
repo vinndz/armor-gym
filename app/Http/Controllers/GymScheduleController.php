@@ -69,36 +69,38 @@ class GymScheduleController extends Controller
      }
 
      public function update(Request $request, $id)
-    {
-        // Validasi input
-        $validateData = $request->validate([
-            'membership_transaction_id' => 'required',
-            'date'  => 'required',
-        ]);
+     {
+         // Validasi input
+         $validateData = $request->validate([
+             'membership_transaction_id' => 'required',
+             'date'  => 'required',
+         ]);
+     
+         // Temukan jadwal berdasarkan ID
+         $schedule = GymSchedule::findOrFail($id);
+     
+         // Jika jadwal tidak ditemukan
+         if (!$schedule) {
+             Alert::error('Error', 'Failed to find gym schedule member!');
+             return redirect()->back();
+         }
+     
+         // Cek apakah jadwal dengan ID $id memiliki status 'present'
+         if ($schedule->status === 'present') {
+             Alert::error('Error', 'Cannot update member because status is present!');
+             return redirect()->back();
+         }
+     
+         // Perbarui data jadwal dengan data yang telah divalidasi
+         $schedule->update($validateData);
+     
+         // Berhasil memperbarui, berikan pesan sukses dan redirect kembali
+         Alert::success('Success', 'Successfully updated gym schedule member!');
+         return redirect()->back();
+     }
+     
 
-        // Cek apakah jadwal dengan ID $id memiliki status 'present'
-        $checkStatus = GymSchedule::where('id', $id)->where('status', 'present')->first();
-        if ($checkStatus) {
-            Alert::error('Error', 'Cannot update member because status is present!');
-            return redirect()->back();
-        }
 
-        // Temukan jadwal berdasarkan ID
-        $schedule = GymSchedule::findOrFail($id);
-
-        // Jika jadwal tidak ditemukan
-        if (!$schedule) {
-            Alert::error('Error', 'Failed to find gym schedule member!');
-            return redirect()->back();
-        }
-
-        // Perbarui data jadwal dengan data yang telah divalidasi
-        $schedule->update($validateData);
-
-        // Berhasil memperbarui, berikan pesan sukses dan redirect kembali
-        Alert::success('Success', 'Successfully updated gym schedule member!');
-        return redirect()->back();
-    }
 
 
      public function destroy($id)
