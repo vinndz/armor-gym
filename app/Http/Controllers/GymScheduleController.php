@@ -172,7 +172,7 @@ class GymScheduleController extends Controller
                 'time' => $time,
                 'status' => $status,
                 "action" => '<div class="btn-group" role="group">
-                            <a href="'.url("gym-schedule/update/".$record->id).'" class="text-primary" data-bs-toggle="modal" data-bs-target="#updateScheduleGym'.$record->id.'">
+                            <a href="'.url("gym-schedule/update/".$record->id).'" class="text-primary btn-update" data-bs-toggle="modal" data-bs-target="#updateScheduleGym'.$record->id.'">
                                 <button type="button" class="btn btn-outline-success btn-xs" style="width:80px; margin-right:20px">
                                     Update
                                 </button>
