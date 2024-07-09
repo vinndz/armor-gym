@@ -69,31 +69,38 @@ class GymScheduleController extends Controller
      }
 
      public function update(Request $request, $id)
-     {
+    {
+        // Validasi input
         $validateData = $request->validate([
             'membership_transaction_id' => 'required',
             'date'  => 'required',
         ]);
 
+        // Cek apakah jadwal dengan ID $id memiliki status 'present'
         $schedule = GymSchedule::where('id', $id)->where('status', 'present')->first();
         if ($schedule) {
-            Alert::error('Error', 'Cannot update member!');
+            // Jika status present, beri pesan error dan redirect kembali
+            Alert::error('Error', 'Cannot update member because status is present!');
             return redirect()->back();
         }
 
+        // Temukan jadwal berdasarkan ID
         $schedule = GymSchedule::findOrFail($id);
 
-        if(!$schedule){
-            Alert::error('Error', 'Failed updated gym schedule member!');
+        // Jika jadwal tidak ditemukan
+        if (!$schedule) {
+            Alert::error('Error', 'Failed to find gym schedule member!');
             return redirect()->back();
         }
 
-        $schedule->find($validateData);
-        $schedule->save();
+        // Perbarui data jadwal dengan data yang telah divalidasi
+        $schedule->update($validateData);
+
+        // Berhasil memperbarui, berikan pesan sukses dan redirect kembali
         Alert::success('Success', 'Successfully updated gym schedule member!');
         return redirect()->back();
-            
-     }
+    }
+
 
      public function destroy($id)
      {
