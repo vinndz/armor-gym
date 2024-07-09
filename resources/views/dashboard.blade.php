@@ -427,8 +427,8 @@
                     <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
                     <p><i class="fas fa-home me-3"></i> Yos Sudarso Street Number 792 B, SangkalPutung Semondo, Gombong.
                     </p>
-                    <p><i class="fas fa-phone me-3"></i> +62 823 849 8939 4444</p>
-                    <a href="#" class="btn btn-success" style="color:white">WhatsApp</a>
+                    <p><i class="fas fa-phone me-3"></i> +62 895 1033 7817</p>
+                        <a href="https://wa.link/9tkfuv" class="btn btn-success" style="color:white">WhatsApp</a>
                 </div>
             </div>
         </div>
