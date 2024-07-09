@@ -77,9 +77,8 @@ class GymScheduleController extends Controller
         ]);
 
         // Cek apakah jadwal dengan ID $id memiliki status 'present'
-        $schedule = GymSchedule::where('id', $id)->where('status', 'present')->first();
-        if ($schedule) {
-            // Jika status present, beri pesan error dan redirect kembali
+        $checkStatus = GymSchedule::where('id', $id)->where('status', 'present')->first();
+        if ($checkStatus) {
             Alert::error('Error', 'Cannot update member because status is present!');
             return redirect()->back();
         }
