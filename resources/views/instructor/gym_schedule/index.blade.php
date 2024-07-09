@@ -1,11 +1,11 @@
 @extends('layouts.master')
 
 @section('css')
-    <!-- Datatables CSS CDN -->
-    <link rel="stylesheet" href="{{ URL::asset('assets/libs/gridjs/theme/mermaid.min.css') }}">
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-    @include('instructor.gym_schedule.style')
+<!-- Datatables CSS CDN -->
+<link rel="stylesheet" href="{{ URL::asset('assets/libs/gridjs/theme/mermaid.min.css') }}">
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+@include('instructor.gym_schedule.style')
 @endsection
 
 @section('content')
@@ -22,7 +22,8 @@
                 </div>
             </div>
             <div style="width: 100%; height: 700px; overflow: auto;">
-                <table class="table table-hover  table-responsive table-condensed animate__animated animate__fadeIn" id="table" width="100%">
+                <table class="table table-hover  table-responsive table-condensed animate__animated animate__fadeIn"
+                    id="table" width="100%">
                     <thead class="table-dark ">
                         <th style="color: black;">{{ ucwords('no') }}</th>
                         <th style="color: black;">{{ ucwords('name member') }}</th>
@@ -31,16 +32,16 @@
                         <th style="color: black;">{{ ucwords('time') }}</th>
                         <th style="color: black;">{{ ucwords('status') }}</th>
                         <th style="color: black;">{{ ucwords('action') }}</th>
-                    </thead>                    
+                    </thead>
                 </table>
-            </div>            
+            </div>
         </div>
     </div>
 </div>
 
 
- {{-- add modal --}}
- <div class="modal fade" id="addScheduleGym" tabindex="-1" aria-labelledby="addScheduleGymLabel" aria-hidden="true">
+{{-- add modal --}}
+<div class="modal fade" id="addScheduleGym" tabindex="-1" aria-labelledby="addScheduleGymLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -48,23 +49,25 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <form method="POST" id ="add-form" action="{{ route('gym-schedule.store') }}">
+                <form method="POST" id="add-form" action="{{ route('gym-schedule.store') }}">
                     @csrf
                     <input type="hidden" value="{{ auth()->user()->id}}" name="id">
-                        <div class="mb-3">
-                            <label for="membership_id" class="form-label">{{ ucwords('Member') }}</label>
-                            <select id="membership_id" name="membership_id" class="form-control  @error('membership_id') is-invalid @enderror" required>
-                                <option value="" disabled selected>Select Member</option>
-                                @foreach ($members as $userId => $name)
-                                    <option value="{{ $userId }}">{{ $name }}</option>
-                                @endforeach
-                            </select>                                                   
-                        </div>
-                    
-                        <div class="mb-3">
-                            <label for="date" class="form-label">{{ ucwords('date') }}</label>
-                            <input type="datetime-local" class="form-control  @error('date') is-invalid @enderror" id="date" name="date">
-                        </div>
+                    <div class="mb-3">
+                        <label for="membership_id" class="form-label">{{ ucwords('Member') }}</label>
+                        <select id="membership_id" name="membership_id"
+                            class="form-control  @error('membership_id') is-invalid @enderror" required>
+                            <option value="" disabled selected>Select Member</option>
+                            @foreach ($members as $userId => $name)
+                            <option value="{{ $userId }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="date" class="form-label">{{ ucwords('date') }}</label>
+                        <input type="datetime-local" class="form-control  @error('date') is-invalid @enderror" id="date"
+                            name="date">
+                    </div>
                     <button type="button" class="btn btn-primary" id="submit-btn">Submit</button>
                 </form>
 
@@ -84,30 +87,34 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-               <form method="POST" action="{{ route('gym-schedule.update', ['id' => $data->id]) }}">
-                   @csrf
-                   @method('PUT')
-                   <div class="mb-3">
+                <form method="POST" action="{{ route('gym-schedule.update', ['id' => $data->id]) }}">
+                    @csrf
+                    @method('PUT')
                     <div class="mb-3">
-                        <label for="membership_transaction_id" class="form-label">{{ ucwords('member') }}</label>
-                        <select required name="membership_transaction_id" id="membership_transaction_id" class="form-control @error('membership_transaction_id') is-invalid @enderror">
-                            @foreach ($members as $userId => $name)
-                                <option value="{{ $userId }}" {{ old('membership_transaction_id') == $userId ? 'selected' : '' }}>
+                        <div class="mb-3">
+                            <label for="membership_transaction_id" class="form-label">{{ ucwords('member') }}</label>
+                            <select required name="membership_transaction_id" id="membership_transaction_id"
+                                class="form-control @error('membership_transaction_id') is-invalid @enderror">
+                                @foreach ($members as $userId => $name)
+                                <option value="{{ $userId }}" {{ old('membership_transaction_id')==$userId ? 'selected'
+                                    : '' }}>
                                     {{ $name }}
                                 </option>
-                            @endforeach
-                        </select>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                   </div>
-                   <div class="mb-3">
+                    <div class="mb-3">
                         <label for="date" class="form-label">{{ ucwords('date') }}</label>
-                        <input type="datetime-local" class="form-control @error('date') is-invalid @enderror" value="{{ $data->date }}" id="date" name="date">
+                        <input type="datetime-local" class="form-control @error('date') is-invalid @enderror"
+                            value="{{ $data->date }}" id="date" name="date">
                         @error('date')
                         <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                        @enderror
                     </div>
-                   <button type="button" class="btn btn-primary update-submit-btn" data-id="{{ $data->id }}">Submit</button>
-               </form>
+                    <button type="button" class="btn btn-primary update-submit-btn"
+                        data-id="{{ $data->id }}">Submit</button>
+                </form>
             </div>
         </div>
     </div>
@@ -115,8 +122,8 @@
 @endforeach
 
 
-  <!-- Script -->
-  <script type="text/javascript">
+<!-- Script -->
+<script type="text/javascript">
     $(document).ready(function() {
         var table = $('#table').DataTable({
             processing: true,
@@ -155,6 +162,14 @@
                 }
             }
         });
+
+        $('#table').on('click', '.btn-update', function(e) {
+                e.preventDefault(); // Prevent default link behavior
+                var url = $(this).attr('href');
+                var modalId = $(this).data('target'); // Ambil ID modal dari data-target
+                $(modalId).modal('show'); // Tampilkan modal yang sesuai dengan ID
+            });
+
 
         // Menambahkan placeholder ke dalam kotak pencarian
         $('div.dataTables_wrapper input[type="search"]').attr('placeholder', 'Search...');
