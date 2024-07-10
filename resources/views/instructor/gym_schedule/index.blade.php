@@ -78,7 +78,7 @@
 {{-- end add modal --}}
 
 @foreach ($datas as $data)
-<div class="modal fade" id="updateScheduleGym{{ $data->id }}" tabindex="-1"
+<div class="modal fade" id="updateScheduleGymModal{{ $data->id }}" tabindex="-1"
     aria-labelledby="updateScheduleGymLabel{{ $data->id }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl modal-dialog-centered">
         <div class="modal-content">
@@ -87,32 +87,35 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
-                <form method="POST" action="{{ route('gym-schedule.update', ['id' => $data->id]) }}">
+                <form id="updateForm{{ $data->id }}" method="POST"
+                    action="{{ route('gym-schedule.update', ['id' => $data->id]) }}">
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
-                        <div class="mb-3">
-                            <label for="membership_transaction_id" class="form-label">{{ ucwords('member') }}</label>
-                            <select required name="membership_transaction_id" id="membership_transaction_id"
-                                class="form-control @error('membership_transaction_id') is-invalid @enderror">
-                                @foreach ($members as $userId => $name)
-                                <option value="{{ $userId }}" {{ old('membership_transaction_id')==$userId ? 'selected'
-                                    : '' }}>
-                                    {{ $name }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        <label for="membership_transaction_id" class="form-label">{{ ucwords('member') }}</label>
+                        <select required name="membership_transaction_id" id="membership_transaction_id_{{ $data->id }}"
+                            class="form-control @error('membership_transaction_id') is-invalid @enderror">
+                            @foreach ($members as $userId => $name)
+                            <option value="{{ $userId }}" {{ old('membership_transaction_id', $data->
+                                membership_transaction_id) == $userId ? 'selected' : '' }}>
+                                {{ $name }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('membership_transaction_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label for="date" class="form-label">{{ ucwords('date') }}</label>
                         <input type="datetime-local" class="form-control @error('date') is-invalid @enderror"
-                            value="{{ $data->date }}" id="date" name="date">
+                            value="{{ \Carbon\Carbon::parse($data->date)->format('Y-m-d\TH:i') }}"
+                            id="date_{{ $data->id }}" name="date">
                         @error('date')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <button type="button" class="btn btn-primary update-submit-btn"
+                    <button type="submit" class="btn btn-primary update-submit-btn"
                         data-id="{{ $data->id }}">Submit</button>
                 </form>
             </div>
@@ -120,6 +123,7 @@
     </div>
 </div>
 @endforeach
+
 
 
 <!-- Script -->
@@ -218,7 +222,7 @@
                     table.ajax.reload();
                     $('#updateScheduleGym' + id).modal('hide');
                     // Tampilkan pesan sukses jika perlu
-                    Swal.fire("Success", "Successfully updated daily gym!", "success");
+                    Swal.fire("Success", "Successfully updated schedule gym!", "success");
         
                 },
                 error: function(xhr) {
