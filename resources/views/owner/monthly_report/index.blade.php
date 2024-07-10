@@ -115,7 +115,7 @@
             { data: 'total', name: 'total', className: 'text-right',
                 render: function(data, type, row) {
                     if (type === 'display' || type === 'filter') {
-                        return formatCurrency(data);
+                        return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
                     }
                     return data;
                 }
@@ -146,7 +146,7 @@
             }, 0);
             
             // Update the footer for the 'total' column
-            $(api.column(5).footer()).html(formatCurrency(totalIncome));
+            $(api.column(5).footer()).html(totalIncome);
         },
 
     });
@@ -160,9 +160,7 @@
     });
 
     // Function to format number as currency
-    function formatCurrency(number) {
-        return 'Rp. ' + number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-    }
+
     });
 </script>
 
