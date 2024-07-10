@@ -206,37 +206,29 @@
             });
         });
 
-        $('.update-submit-btn').click(function() {
-            var id = $(this).data('id');
-            var form = $('#updateScheduleGym' + id).find('form');
-            $.ajax({
-                url: form.attr('action'),
-                method: form.attr('method'),
-                data: form.serialize(),
-                success: function(response) {
-                    // Jika berhasil, reload DataTable dan tutup modal
-                    table.ajax.reload();
-                    $('#updateScheduleGym' + id).modal('hide');
-                    // Tampilkan pesan sukses jika perlu
-                    Swal.fire("Success", "Successfully updated daily gym!", "success");
-        
-                },
-                error: function(xhr) {
-                    // Tampilkan pesan kesalahan di modal
-                    var errors = xhr.responseJSON.errors;
-                    $('#updateScheduleGym' + id).find('.invalid-feedback').remove(); // Hapus pesan kesalahan sebelumnya
-                    $('#updateScheduleGym' + id).find('.is-invalid').removeClass('is-invalid'); // Hapus class is-invalid sebelumnya
+        $('#table').on('click', '.btn-update', function(e) {
+        e.preventDefault(); // Mencegah default action link
+        var url = $(this).attr('href');
+        var modalId = $(this).data('target'); // Ambil ID modal dari data-target
 
-                    $.each(errors, function(field, messages) {
-                        var input = $('#updateScheduleGym' + id).find('[name="' + field + '"]');
-                        input.addClass('is-invalid');
-                        $.each(messages, function(index, message) {
-                            input.after('<div class="invalid-feedback">' + message + '</div>');
-                        });
-                    });
-                }
-            });
+        // Lakukan AJAX untuk mengambil data jadwal gym yang akan diupdate
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(response) {
+                // Isi form update dengan data yang diterima
+                var form = $(modalId).find('form');
+                form.find('[name="membership_transaction_id"]').val(response.membership_transaction_id).trigger('change');
+                form.find('[name="date"]').val(response.date).trigger('change');
+                // Tampilkan modal update
+                $(modalId).modal('show');
+            },
+            error: function(xhr) {
+                console.log('Error:', xhr);
+                alert('Error fetching data for update');
+            }
         });
+    });
     });
 </script>
 @endsection
