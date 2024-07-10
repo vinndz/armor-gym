@@ -1,17 +1,17 @@
 @extends('layouts.master')
 
 @section('css')
-    <!-- Datatables CSS CDN -->
-    <link rel="stylesheet" href="{{ URL::asset('assets/libs/gridjs/theme/mermaid.min.css') }}">
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-    <script src="{{ URL::asset('assets/js/tableToExcel.js') }}"></script>
-    @include('instructor.gym_schedule.style')
-    <style>
-        .text-right {
-            text-align: right;
-        }
-    </style>
+<!-- Datatables CSS CDN -->
+<link rel="stylesheet" href="{{ URL::asset('assets/libs/gridjs/theme/mermaid.min.css') }}">
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+<script src="{{ URL::asset('assets/js/tableToExcel.js') }}"></script>
+@include('instructor.gym_schedule.style')
+<style>
+    .text-right {
+        text-align: right;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -21,7 +21,8 @@
     <div class="card">
         <div class="card-body">
             <div class="dropdown show" id="export-dropdown" style="float: right;">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="exportDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="exportDropdown" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
                     Export Report<i class='bx bx-chevron-down'></i>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="exportDropdown">
@@ -32,7 +33,8 @@
 
             <div class="form-group">
                 <label for="type">Search by Type Transaction: *</label>
-                <select class="form-control" id="type" name="type" style="max-width: 200px; display: inline; margin-bottom:40px">
+                <select class="form-control" id="type" name="type"
+                    style="max-width: 200px; display: inline; margin-bottom:40px">
                     <option value="All" selected>All</option>
                     <option value="Suplement">Suplement</option>
                     <option value="Daily Gym Transaction">Daily Gym Transaction</option>
@@ -42,7 +44,8 @@
 
             <div class="form-group">
                 <label for="month">Month: *</label>
-                <select class="form-control" id="month" name="month" style="max-width: 200px; display: inline; margin-bottom:40px">
+                <select class="form-control" id="month" name="month"
+                    style="max-width: 200px; display: inline; margin-bottom:40px">
                     <option value="All" selected>All</option>
                     <option value="1">January</option>
                     <option value="2">February</option>
@@ -57,11 +60,12 @@
                     <option value="11">November</option>
                     <option value="12">December</option>
                 </select>
-                
+
             </div>
-             
+
             <div style="width: 100%; height: 700px;">
-                <table class="table table-hover  table-responsive table-condensed animate__animated animate__fadeIn" id="table" width="100%">
+                <table class="table table-hover  table-responsive table-condensed animate__animated animate__fadeIn"
+                    id="table" width="100%">
                     <thead class="table-dark ">
                         <th style="color: black;">{{ ucwords('no') }}</th>
                         <th style="color: black;">{{ ucwords('name') }}</th>
@@ -70,7 +74,7 @@
                         <th style="color: black;">{{ ucwords('amount') }}</th>
                         <th style="color: black;">{{ ucwords('total') }}</th>
                     </thead>
-                    
+
                     {{-- <tfoot>
                         <tr>
                             <td colspan="5" class="text-right"><strong>Total Income:</strong></td>
@@ -78,14 +82,14 @@
                         </tr>
                     </tfoot> --}}
                 </table>
-            </div>            
+            </div>
         </div>
     </div>
 </div>
 
 
 
-  <!-- Script -->
+<!-- Script -->
 <script type="text/javascript">
     $(document).ready(function() {
     var table = $('#table').DataTable({
@@ -194,7 +198,7 @@
             window.location.reload();
         });
     });
-    </script>
+</script>
 
 
 
