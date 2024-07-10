@@ -24,33 +24,45 @@ class SuplementTransactionController extends Controller
 
     public function store(Request $request)
     {
-
         $request->validate([
             'user_id' => 'required',
             'suplement_id' => 'required',
             'amount' => 'required|numeric',
         ]);
-        $user = User::where('id', $request->user_id)->first();
-        $suplement = Suplement::findOrFail($request->suplement_id);
 
-        if ($suplement->stock < $request->amount) {
-                return response()->json(['errors' => ['amount' => ['Insufficient stock!']]], 422);
-            }
-        // total
-        $total = $request->amount * $suplement->price;
+        // Retrieve user and supplement
+        $user = User::findOrFail($request->user_id);
+        $supplement = Suplement::findOrFail($request->suplement_id);
+
+        // Check if there is sufficient stock
+        if ($supplement->stock < $request->amount) {
+            return response()->json(['errors' => ['amount' => ['Insufficient stock!']]], 422);
+        }
+
+        // Calculate total transaction amount
+        $total = $request->amount * $supplement->price;
+
+        // Create SuplementTransaction record
         $date = Carbon::now();
-        SuplementTransaction::create([
+        $transaction = SuplementTransaction::create([
             'user_id' => $user->id,
-            'suplement_id' => $suplement->id,
+            'suplement_id' => $supplement->id,
             'date' => $date,
             'amount' => $request->amount,
             'total' => $total,
         ]);
-        
 
-        Alert::success('Success', 'Successfully created transaction suplement!');
+        // Update stock
+        $supplement->stock -= $request->amount;
+        $supplement->save();
+
+        // Optionally, you can use an alert or flash message
+        Alert::success('Success', 'Successfully created supplement transaction!');
+
+        // Redirect back or return response as needed
         return redirect()->back();
     }
+
 
     public function data(Request $request)
     {
