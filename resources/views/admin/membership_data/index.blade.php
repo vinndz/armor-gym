@@ -198,10 +198,10 @@
                     data: form.serialize(),
                     success: function(response) {
                         // Jika berhasil, reload DataTable dan tutup modal
-                        table.ajax.reload();
                         $('#addMembership').modal('hide');
                         // Tampilkan pesan sukses jika perlu
                         Swal.fire("Success", "Successfully created membership data!", "success");
+                        window.location.reload();
                     },
                     error: function(xhr) {
                         // Tampilkan pesan kesalahan di modal

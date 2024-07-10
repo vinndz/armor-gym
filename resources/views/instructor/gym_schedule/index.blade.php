@@ -175,6 +175,7 @@
         $('div.dataTables_wrapper input[type="search"]').attr('placeholder', 'Search...');
 
         $('#submit-btn').click(function() {
+            event.preventDefault();
             var form = $('#add-form');
             $.ajax({
                 url: form.attr('action'),
@@ -182,10 +183,11 @@
                 data: form.serialize(),
                 success: function(response) {
                     // Jika berhasil, reload DataTable dan tutup modal
-                    table.ajax.reload();
+                    
                     $('#addScheduleGym').modal('hide');
                     // Tampilkan pesan sukses jika perlu
                     Swal.fire("Success", "Successfully created gym schedule member!", "success");
+                    window.location.reload()
                 },
                 error: function(xhr) {
                     // Tampilkan pesan kesalahan di modal
@@ -217,6 +219,7 @@
                     $('#updateScheduleGym' + id).modal('hide');
                     // Tampilkan pesan sukses jika perlu
                     Swal.fire("Success", "Successfully updated daily gym!", "success");
+        
                 },
                 error: function(xhr) {
                     // Tampilkan pesan kesalahan di modal
