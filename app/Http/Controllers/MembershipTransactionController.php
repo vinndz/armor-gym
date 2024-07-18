@@ -122,6 +122,10 @@ class MembershipTransactionController extends Controller
                 $record->status = 'expired';
                 $record->save();
                 $status = 'expired'; // Update status pada variabel lokal
+
+                //ubah member menjadi guest
+                $record->user->role = 'GUEST';
+                $record->user->save();
             }
         
             $data_arr[] = array(
