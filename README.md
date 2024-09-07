@@ -59,6 +59,12 @@ In order to ensure that the Laravel community is welcoming to all, please review
 
 ## Security Vulnerabilities
 
+## IMPLEMENTATION
+![screencapture-test-armorgym-my-id-2024-09-07-17_05_10](https://github.com/user-attachments/assets/72b15ac9-c41b-412e-a1ce-6fc618b3489a)
+![screencapture-test-armorgym-my-id-login-2024-09-07-17_07_41](https://github.com/user-attachments/assets/6813522a-4355-4499-8364-28cb028b51a4)
+
+
+
 If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
 ## License
