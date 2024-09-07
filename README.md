@@ -60,8 +60,22 @@ In order to ensure that the Laravel community is welcoming to all, please review
 ## Security Vulnerabilities
 
 ## IMPLEMENTATION
+Home Page
 ![screencapture-test-armorgym-my-id-2024-09-07-17_05_10](https://github.com/user-attachments/assets/72b15ac9-c41b-412e-a1ce-6fc618b3489a)
+Login Page
 ![screencapture-test-armorgym-my-id-login-2024-09-07-17_07_41](https://github.com/user-attachments/assets/6813522a-4355-4499-8364-28cb028b51a4)
+Admin Page
+![screencapture-test-armorgym-my-id-admin-home-2024-09-07-17_17_17](https://github.com/user-attachments/assets/41d2da40-cc2f-4b3f-8d02-f2f33109a846)
+Instructor Page
+![screencapture-test-armorgym-my-id-instructor-home-2024-09-07-17_18_44](https://github.com/user-attachments/assets/4b62b446-cd87-498a-af27-450a48ede055)
+Owner Page
+![screencapture-test-armorgym-my-id-report-index-monthly-2024-09-07-17_19_39](https://github.com/user-attachments/assets/c7823797-4ea8-4d6d-8725-836ddaa72673)
+Member Page
+![screencapture-test-armorgym-my-id-gym-schedule-index-member-2024-09-07-17_21_55](https://github.com/user-attachments/assets/d86293ae-2767-4f50-9d69-0966db9b283c)
+
+
+
+
 
 
 
